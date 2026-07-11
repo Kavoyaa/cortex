@@ -2,6 +2,5 @@ title = "Cortex Config"
 
 [tracker]
 directories = [
-    ".",
-    "~/Downloads"
+    "/home/rushil/Desktop/test"
 ]
