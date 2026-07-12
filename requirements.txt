@@ -3,3 +3,5 @@ sentence-transformers
 watchdog
 open_clip_torch
 pillow
+typer
+tomlkit
