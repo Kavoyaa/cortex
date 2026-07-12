@@ -1,23 +1,75 @@
-# reasoning/prompt.py
 def build_prompt(query: str, results: list[dict]) -> str:
     if not results:
-        return f"""The user asked: "{query}"
+        return f"""
+You are Cortex, an offline semantic memory assistant.
 
-No relevant files were found on their system for this query. Politely tell them nothing matching was found, and don't make anything up."""
+The user asked:
+
+{query}
+
+No relevant files were found.
+
+Tell the user politely that nothing matching their query was found.
+Do not invent any information.
+""".strip()
 
     context_parts = []
+
     for r in results:
+
         if r["type"] == "text":
-            context_parts.append(f"File: {r['file_path']}\n{r['content']}")
+            context_parts.append(
+                f"""
+==========================
+TEXT FILE
+
+Path:
+{r['file_path']}
+
+Content:
+{r['content']}
+"""
+            )
+
         elif r["type"] == "image":
-            context_parts.append(f"File: {r['file_path']} (an image matched this query)")
+            context_parts.append(
+                f"""
+==========================
+IMAGE FILE
 
-    context = "\n\n---\n\n".join(context_parts)
+Path:
+{r['file_path']}
 
-    return f"""You are answering a question using ONLY the file excerpts below from the user's local computer. Do not use outside knowledge. If the excerpts don't contain enough to answer, say so honestly.
+Note:
+This image matched the semantic search.
+"""
+            )
+
+    context = "\n".join(context_parts)
+
+    return f"""
+You are Cortex, an offline semantic memory assistant.
+
+Your task is to answer the user's question ONLY using the retrieved context below.
+
+Rules:
+- Only use the retrieved context.
+- Do not use outside knowledge.
+- Never invent file names.
+- If the answer cannot be determined, clearly say so.
+- Mention relevant file paths whenever helpful.
+
+Retrieved Context:
 
 {context}
 
-Question: {query}
+==========================
 
-Answer:"""
+USER QUESTION
+
+{query}
+
+==========================
+
+ANSWER:
+""".strip()
