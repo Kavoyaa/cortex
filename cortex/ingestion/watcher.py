@@ -67,6 +67,7 @@ class EventHandler(events.FileSystemEventHandler):
 # starts tracking files
 def start_watcher():
     event_handler = EventHandler()
+
     observer = Observer()
 
     # loading which directories to track from the config file
@@ -82,6 +83,12 @@ def start_watcher():
     observer.start()
     logger.log("[LOG] Watcher started.")
     return observer
+
+# stop
+def stop_watcher(observer):
+    observer.stop()
+    observer.join()
+
 
 # in case we want to run this file separately (For testing)
 # python -m ingestion.watcher
