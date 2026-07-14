@@ -1,7 +1,17 @@
-def build_prompt(query: str, results: list[dict]) -> str:
+def build_prompt(query: str, results: list[dict], history: list[dict] = None) -> str:
+    
+    history_str = ""
+    if history:
+        history_str = "==========================\nRECENT CHAT HISTORY\n\n"
+        for msg in history:
+            history_str += f"{msg['role']}:\n{msg['content']}\n\n"
+
+   
     if not results:
         return f"""
 You are Cortex, an offline semantic memory assistant.
+
+{history_str}==========================
 
 The user asked:
 
@@ -13,10 +23,9 @@ Tell the user politely that nothing matching their query was found.
 Do not invent any information.
 """.strip()
 
+  
     context_parts = []
-
     for r in results:
-
         if r["type"] == "text":
             context_parts.append(
                 f"""
@@ -30,7 +39,6 @@ Content:
 {r['content']}
 """
             )
-
         elif r["type"] == "image":
             context_parts.append(
                 f"""
@@ -47,6 +55,7 @@ This image matched the semantic search.
 
     context = "\n".join(context_parts)
 
+    
     return f"""
 You are Cortex, an offline semantic memory assistant.
 
@@ -63,7 +72,7 @@ Retrieved Context:
 
 {context}
 
-==========================
+{history_str}==========================
 
 USER QUESTION
 

@@ -2,12 +2,16 @@ import threading
 import webview
 from pathlib import Path
 import getpass
-    
+from collections import deque
+
 UI_DIR = Path(__file__).parent / "static"
+
 class Api:
     def __init__(self):
         self.llm = None
         self._loading = False
+       
+        self.chat_history = deque(maxlen=10)
 
     def whoami(self) -> str:
         return getpass.getuser()
@@ -39,10 +43,18 @@ class Api:
 
         self._ensure_llm()
         results = search(query, k=5)
-        prompt = build_prompt(query, results)
+        
+        
+        history_list = list(self.chat_history)
+        prompt = build_prompt(query, results, history_list)
+        
         answer = self.llm.generate(prompt)
+        
+        
+        self.chat_history.append({"role": "User", "content": query})
+        self.chat_history.append({"role": "Cortex", "content": answer})
+        
         return {"answer": answer, "results": results}
-
 
 def start_ui():
     from cortex.shared.models import start_server, stop_server
