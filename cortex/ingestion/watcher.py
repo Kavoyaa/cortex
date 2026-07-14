@@ -78,9 +78,13 @@ def start_watcher():
     directories = config["tracker"]["directories"]
 
     for item in directories:
-        path = os.path.expanduser(item)
-        observer.schedule(event_handler, path, recursive=True)
-
+        if os.path.exists(item):
+            path = os.path.expanduser(item)
+            observer.schedule(event_handler, path, recursive=True)
+        else:
+            logger.log(f"[SKIPPED WATCHING] {item}: does not currently exist.")
+            print(f"\033[31m {item} does not exist.\033[0m Watcher will not attempt to track this until a program restart.")
+            print(f"\033[2mtip: maybe the directory was deleted, or on a disk not currently mounted?\033[0m\n")
     observer.start()
 
     def _bulk_index() -> None:
