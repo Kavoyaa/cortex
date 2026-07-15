@@ -15,7 +15,7 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 
 _INDEX_LOCK = threading.RLock()
 
-md = MarkItDown()
+# md = MarkItDown() kill this line
 
 def file_metadata(path: str) -> dict:
     stat = os.stat(path)
@@ -58,7 +58,8 @@ def try_index(file_path: str) -> None:
                 #text = md.convert(path).text_content
             else:
                 # converting a doc to markdown
-                text = md.convert(path).text_content
+                # text = md.convert(path).text_content
+                pass
         except (UnicodeDecodeError, PermissionError, FileNotFoundError) as e:
             logger.log(f"[SKIPPED UNREADABLE] {file_path}: {e}")
             return
